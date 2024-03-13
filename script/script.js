@@ -1,122 +1,189 @@
-
 var board;
-var playerO = "O";
-var playerX = "X";
-var currPlayer = playerO;
-var gameOver = false;
+var score = 0;
+var rows = 4;
+var columns = 4;
 
 window.onload = function() {
     setGame();
 }
 
 function setGame() {
-    board = [
-                [' ', ' ', ' '],
-                [' ', ' ', ' '],
-                [' ', ' ', ' ']
-            ]
+    // board = [
+    //     [2, 2, 2, 2],
+    //     [2, 2, 2, 2],
+    //     [4, 4, 8, 8],
+    //     [4, 4, 8, 8]
+    // ];
 
-    for (let r = 0; r < 3; r++) {
-        for (let c = 0; c < 3; c++) {
+    board = [
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]
+    ]
+
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < columns; c++) {
             let tile = document.createElement("div");
             tile.id = r.toString() + "-" + c.toString();
-            tile.classList.add("tile");
-            if (r == 0 || r == 1) {
-                tile.classList.add("horizontal-line");
-            }
-            if (c == 0 || c == 1) {
-                tile.classList.add("vertical-line");
-            }
-            tile.innerText = "";
-            tile.addEventListener("click", setTile);
-            document.getElementById("board").appendChild(tile);
+            let num = board[r][c];
+            updateTile(tile, num);
+            document.getElementById("board").append(tile);
+        }
+    }
+    //create 2 to begin the game
+    setTwo();
+    setTwo();
+
+}
+
+function updateTile(tile, num) {
+    tile.innerText = "";
+    tile.classList.value = ""; //clear the classList
+    tile.classList.add("tile");
+    if (num > 0) {
+        tile.innerText = num.toString();
+        if (num <= 4096) {
+            tile.classList.add("x"+num.toString());
+        } else {
+            tile.classList.add("x8192");
+        }                
+    }
+}
+
+document.addEventListener('keyup', (e) => {
+    if (e.code == "ArrowLeft") {
+        slideLeft();
+        setTwo();
+    }
+    else if (e.code == "ArrowRight") {
+        slideRight();
+        setTwo();
+    }
+    else if (e.code == "ArrowUp") {
+        slideUp();
+        setTwo();
+
+    }
+    else if (e.code == "ArrowDown") {
+        slideDown();
+        setTwo();
+    }
+    document.getElementById("score").innerText = score;
+})
+
+function filterZero(row){
+    return row.filter(num => num != 0); //create new array of all nums != 0
+}
+
+function slide(row) {
+    //[0, 2, 2, 2] 
+    row = filterZero(row); //[2, 2, 2]
+    for (let i = 0; i < row.length-1; i++){
+        if (row[i] == row[i+1]) {
+            row[i] *= 2;
+            row[i+1] = 0;
+            score += row[i];
+        }
+    } //[4, 0, 2]
+    row = filterZero(row); //[4, 2]
+    //add zeroes
+    while (row.length < columns) {
+        row.push(0);
+    } //[4, 2, 0, 0]
+    return row;
+}
+
+function slideLeft() {
+    for (let r = 0; r < rows; r++) {
+        let row = board[r];
+        row = slide(row);
+        board[r] = row;
+        for (let c = 0; c < columns; c++){
+            let tile = document.getElementById(r.toString() + "-" + c.toString());
+            let num = board[r][c];
+            updateTile(tile, num);
         }
     }
 }
 
-function setTile() {
-    if (gameOver) {
-        return;
+function slideRight() {
+    for (let r = 0; r < rows; r++) {
+        let row = board[r];         //[0, 2, 2, 2]
+        row.reverse();              //[2, 2, 2, 0]
+        row = slide(row)            //[4, 2, 0, 0]
+        board[r] = row.reverse();   //[0, 0, 2, 4];
+        for (let c = 0; c < columns; c++){
+            let tile = document.getElementById(r.toString() + "-" + c.toString());
+            let num = board[r][c];
+            updateTile(tile, num);
+        }
     }
-
-    let coords = this.id.split("-");    //ex) "1-2" -> ["1", "2'"]
-    let r = parseInt(coords[0]);
-    let c = parseInt(coords[1]);
-
-    if (board[r][c] != ' ') { 
-        //already taken spot
-        return;
-    }
-    
-    board[r][c] = currPlayer; //mark the board
-    this.innerText = currPlayer; //mark the board on html
-
-    //change players
-    if (currPlayer == playerO) {
-        currPlayer = playerX;
-    }
-    else {
-        currPlayer = playerO;
-    }
-
-    //check winner
-    checkWinner();
 }
 
-
-function checkWinner() {
-    //horizontally, check 3 rows
-    for (let r = 0; r < 3; r++) {
-        if (board[r][0] == board[r][1] && board[r][1] == board[r][2] && board[r][0] != ' ') {
-            //if we found the winning row
-            //apply the winner style to that row
-            for (let i = 0; i < 3; i++) {
-                let tile = document.getElementById(r.toString() + "-" + i.toString());
-                tile.classList.add("winner");
-            }
-            gameOver = true;
-            return;
+function slideUp() {
+    for (let c = 0; c < columns; c++) {
+        let row = [board[0][c], board[1][c], board[2][c], board[3][c]];
+        row = slide(row);
+        // board[0][c] = row[0];
+        // board[1][c] = row[1];
+        // board[2][c] = row[2];
+        // board[3][c] = row[3];
+        for (let r = 0; r < rows; r++){
+            board[r][c] = row[r];
+            let tile = document.getElementById(r.toString() + "-" + c.toString());
+            let num = board[r][c];
+            updateTile(tile, num);
         }
     }
+}
 
-    //vertically, check 3 columns
-    for (let c = 0; c < 3; c++) {
-        if (board[0][c] == board[1][c] && board[1][c] ==  board[2][c] && board[0][c] != ' ') {
-            //if we found the winning col
-            //apply the winner style to that col
-            for (let i = 0; i < 3; i++) {
-                let tile = document.getElementById(i.toString() + "-" + c.toString());                
-                tile.classList.add("winner");
-            }
-            gameOver = true;
-            return;
+function slideDown() {
+    for (let c = 0; c < columns; c++) {
+        let row = [board[0][c], board[1][c], board[2][c], board[3][c]];
+        row.reverse();
+        row = slide(row);
+        row.reverse();
+        // board[0][c] = row[0];
+        // board[1][c] = row[1];
+        // board[2][c] = row[2];
+        // board[3][c] = row[3];
+        for (let r = 0; r < rows; r++){
+            board[r][c] = row[r];
+            let tile = document.getElementById(r.toString() + "-" + c.toString());
+            let num = board[r][c];
+            updateTile(tile, num);
         }
     }
+}
 
-    //diagonally
-    if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] != ' ') {
-        for (let i = 0; i < 3; i++) {
-            let tile = document.getElementById(i.toString() + "-" + i.toString());                
-            tile.classList.add("winner");
-        }
-        gameOver = true;
+function setTwo() {
+    if (!hasEmptyTile()) {
         return;
     }
-
-    //anti-diagonally
-    if (board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[0][2] != ' ') {
-        //0-2
-        let tile = document.getElementById("0-2");                
-        tile.classList.add("winner");
-
-        //1-1
-        tile = document.getElementById("1-1");                
-        tile.classList.add("winner");
-
-        //2-0
-        tile = document.getElementById("2-0");                
-        tile.classList.add("winner");
-        gameOver = true;
-        return;
+    let found = false;
+    while (!found) {
+        //find random row and column to place a 2 in
+        let r = Math.floor(Math.random() * rows);
+        let c = Math.floor(Math.random() * columns);
+        if (board[r][c] == 0) {
+            board[r][c] = 2;
+            let tile = document.getElementById(r.toString() + "-" + c.toString());
+            tile.innerText = "2";
+            tile.classList.add("x2");
+            found = true;
+        }
     }
+}
+
+function hasEmptyTile() {
+    let count = 0;
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < columns; c++) {
+            if (board[r][c] == 0) { //at least one zero in the board
+                return true;
+            }
+        }
+    }
+    return false;
 }
