@@ -18,7 +18,10 @@ hr {
     display: flex;
     flex-wrap: wrap;
 }
-
+nav ul li {
+    display: inline;
+    margin-right: 20px;
+}
 .tile {
     width: 90px;
     height: 90px;
