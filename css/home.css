@@ -40,13 +40,19 @@ h1 {
     text-align: center;
     margin-top: 50px;
 }
+/* เพิ่มสไตล์นี้ใน css/home.css */
 
-footer {
-    background-color: #333;
-    color: #fff;
-    text-align: center;
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 10px;
     padding: 20px;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
+    margin: 0 auto;
 }
+
+.gallery img {
+    width: 100%;
+    height: auto;
+}
+
+
