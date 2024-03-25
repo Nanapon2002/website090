@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/popup.css">
     <title>Nanapon</title>
 </head>
 <body>
@@ -17,13 +18,22 @@
         </nav>
     </header>
     <div class="gallery">
-        <img src="image/1.jpg" alt="Photo 1">
-        <img src="image/2.jpg" alt="Photo 2">
-        <img src="image/3.jpg" alt="Photo 3">
-        <img src="image/4.jpg" alt="Photo 4">
-        <img src="image/5.jpg" alt="Photo 5">
-        <img src="image/6.jpg" alt="Photo 6">
+        <img src="image/1.jpg" alt="Photo 1" onclick="openPopup('image/1.jpg', 'Photo 1')">
+        <img src="image/2.jpg" alt="Photo 2" onclick="openPopup('image/2.jpg', 'Photo 2')">
+        <img src="image/3.jpg" alt="Photo 3" onclick="openPopup('image/3.jpg', 'Photo 3')">
+        <img src="image/4.jpg" alt="Photo 4" onclick="openPopup('image/4.jpg', 'Photo 4')">
+        <img src="image/5.jpg" alt="Photo 5" onclick="openPopup('image/5.jpg', 'Photo 5')">
+        <img src="image/6.jpg" alt="Photo 6" onclick="openPopup('image/6.jpg', 'Photo 6')">
     </div>
 
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="close" onclick="closePopup()">&times;</span>
+            <img id="popup-image" src="" alt="Popup Image">
+            <div id="popup-caption" class="caption"></div>
+        </div>
+    </div>
+
+    <script src="script/popup.js"></script>
 </body>
 </html>
